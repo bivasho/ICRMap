@@ -1,13 +1,28 @@
+/* Base styles */
 body, html {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
 }
 
+/* Auth and main screens */
+.auth-screen, .main-screen {
+  padding: 0;
+  margin: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Map and property container */
 #container {
   display: flex;
-  height: 100vh;
+  flex-direction: row;
+  height: 80vh;
+  width: 100%;
 }
 
 #map {
@@ -23,55 +38,70 @@ body, html {
   background-color: #f9f9f9;
 }
 
+/* Property details content */
 #propertyDetails img {
   max-width: 100%;
   margin-top: 10px;
 }
-#filters {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: white;
-  padding: 10px;
-  z-index: 999;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
-}
-#filters select {
-  margin-right: 10px;
-}
-#container {
-  display: flex;
-  height: 600px;
-}
 
-#map {
-  flex: 2;
-  height: 100%;
-}
-
-#sidebar {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  border-left: 1px solid #ccc;
-  background-color: #f9f9f9;
-}
-
+/* Filters panel - full-width below map */
 #filtersPanel {
+  width: 100%;
   padding: 20px;
-  margin: 0 auto;
   background: white;
   border-top: 1px solid #ddd;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  flex-wrap: wrap;
+  box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
+}
+
+#filtersPanel h3 {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#filtersPanel label {
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
 #filtersPanel select {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  min-width: 200px;
 }
 
+/* Smooth visual transitions */
+.leaflet-container {
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  #map {
+    height: 400px;
+  }
+
+  #sidebar {
+    border-left: none;
+    border-top: 1px solid #ccc;
+  }
+
+  #filtersPanel {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #filtersPanel select {
+    width: 90%;
+  }
+}
