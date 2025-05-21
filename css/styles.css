@@ -1,0 +1,29 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+#container {
+  display: flex;
+  height: 100vh;
+}
+
+#map {
+  flex: 2;
+  height: 100%;
+}
+
+#sidebar {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  border-left: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+#propertyDetails img {
+  max-width: 100%;
+  margin-top: 10px;
+}
