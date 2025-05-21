@@ -1,33 +1,64 @@
-let map = L.map('map').setView([-34.9285, 138.6007], 6);
+let map;
 let markers = [];
-let originalIcon = L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png', shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png' });
-let clickedIcon = L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-grey.png', shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png' });
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+const greenIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
-// Load data and setup map
-fetch('data/properties.json')
-  .then(res => res.json())
-  .then(properties => {
-    const states = new Set();
-    const types = new Set();
+const greyIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-grey.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
-    properties.forEach(prop => {
-      states.add(prop.state);
-      types.add(prop.propertyType);
-    });
-
-    populateFilter('stateFilter', [...states]);
-    populateFilter('typeFilter', [...types]);
-
-    displayMarkers(properties);
-
-    // Filter event
-    document.getElementById('stateFilter').addEventListener('change', () => filterMarkers(properties));
-    document.getElementById('typeFilter').addEventListener('change', () => filterMarkers(properties));
+function initMap() {
+  map = L.map('map', {
+    center: [-34.9285, 138.6007],
+    zoom: 7,
+    zoomAnimation: true,
+    fadeAnimation: true,
+    doubleClickZoom: true,
+    zoomControl: true,
+    inertia: true,
+    markerZoomAnimation: true
   });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  loadProperties(); // Load and show markers
+}
+
+function loadProperties() {
+  fetch('data/properties.json')
+    .then(res => res.json())
+    .then(properties => {
+      const states = new Set();
+      const types = new Set();
+
+      properties.forEach(p => {
+        states.add(p.state);
+        types.add(p.propertyType);
+      });
+
+      populateFilter('stateFilter', [...states]);
+      populateFilter('typeFilter', [...types]);
+
+      displayMarkers(properties);
+
+      document.getElementById('stateFilter').addEventListener('change', () => filterMarkers(properties));
+      document.getElementById('typeFilter').addEventListener('change', () => filterMarkers(properties));
+    });
+}
 
 function populateFilter(selectId, options) {
   const select = document.getElementById(selectId);
@@ -41,14 +72,17 @@ function populateFilter(selectId, options) {
 
 function displayMarkers(properties) {
   clearMarkers();
-  properties.forEach(prop => {
-    const marker = L.marker([prop.latitude, prop.longitude], { icon: originalIcon }).addTo(map);
-    marker.bindPopup(`<strong>${prop.propertyName}</strong><br>${prop.propertyType}`);
+  properties.forEach(p => {
+    const marker = L.marker([p.latitude, p.longitude], { icon: greenIcon }).addTo(map);
+
+    marker.bindPopup(`<strong>${p.propertyName}</strong><br>${p.propertyType}`);
+
     marker.on('click', () => {
-      marker.setIcon(clickedIcon);
-      map.setView([prop.latitude, prop.longitude], 15);
-      showDetails(prop);
+      marker.setIcon(greyIcon);
+      map.setView([p.latitude, p.longitude], 15, { animate: true });
+      showDetails(p);
     });
+
     markers.push(marker);
   });
 }
@@ -63,8 +97,8 @@ function filterMarkers(properties) {
   const selectedType = document.getElementById('typeFilter').value;
 
   const filtered = properties.filter(p =>
-    (selectedState === "" || p.state === selectedState) &&
-    (selectedType === "" || p.propertyType === selectedType)
+    (!selectedState || p.state === selectedState) &&
+    (!selectedType || p.propertyType === selectedType)
   );
 
   displayMarkers(filtered);
