@@ -1,4 +1,4 @@
-/* Base styles */
+/* Reset */
 body, html {
   margin: 0;
   padding: 0;
@@ -7,20 +7,19 @@ body, html {
   background-color: #f4f4f4;
 }
 
-/* Auth and main screens */
-.auth-screen, .main-screen {
-  padding: 0;
-  margin: 0;
-}
-
+/* Hide initially */
 .hidden {
   display: none;
 }
 
-/* Map and property container */
+/* Fullscreen sections */
+#mapSection, #filtersSection {
+  width: 100%;
+}
+
+/* Main map layout */
 #container {
   display: flex;
-  flex-direction: row;
   height: 80vh;
   width: 100%;
 }
@@ -38,22 +37,22 @@ body, html {
   background-color: #f9f9f9;
 }
 
-/* Property details content */
+/* Property description */
 #propertyDetails img {
   max-width: 100%;
   margin-top: 10px;
 }
 
-/* Filters panel - full-width below map */
+/* Filters Panel */
 #filtersPanel {
-  width: 100%;
   padding: 20px;
   background: white;
   border-top: 1px solid #ddd;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
+  width: 100%;
   box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
 }
 
@@ -61,6 +60,11 @@ body, html {
   width: 100%;
   text-align: center;
   margin-bottom: 10px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
 }
 
 #filtersPanel label {
@@ -75,12 +79,12 @@ body, html {
   min-width: 200px;
 }
 
-/* Smooth visual transitions */
+/* Smooth leaflet map transition */
 .leaflet-container {
   transition: transform 0.2s ease, filter 0.2s ease;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   #container {
     flex-direction: column;
