@@ -1,24 +1,16 @@
-var map = L.map('map').setView([-34.9285, 138.6007], 8);
 let map = L.map('map').setView([-34.9285, 138.6007], 6);
 let markers = [];
 let originalIcon = L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png', shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png' });
-let clickedIcon = L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png', shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png' });
+let clickedIcon = L.icon({ iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-grey.png', shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png' });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-attribution: '&copy; OpenStreetMap contributors'
+  attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
 // Load data and setup map
 fetch('data/properties.json')
-.then(res => res.json())
-.then(properties => {
-    properties.forEach(property => {
-      const marker = L.marker([property.latitude, property.longitude]).addTo(map);
-      
-      marker.on('click', () => {
-        marker.setOpacity(0.5); // Greyed out
-        showDetails(property);
-      });
+  .then(res => res.json())
+  .then(properties => {
     const states = new Set();
     const types = new Set();
 
@@ -56,9 +48,9 @@ function displayMarkers(properties) {
       marker.setIcon(clickedIcon);
       map.setView([prop.latitude, prop.longitude], 15);
       showDetails(prop);
-});
+    });
     markers.push(marker);
-});
+  });
 }
 
 function clearMarkers() {
@@ -79,8 +71,15 @@ function filterMarkers(properties) {
 }
 
 function showDetails(p) {
-const html = `
-@@ -30,3 +83,4 @@ function showDetails(p) {
- `;
-document.getElementById('propertyDetails').innerHTML = html;
+  const html = `
+    <h3>${p.propertyName}</h3>
+    <p><strong>Type:</strong> ${p.propertyType}</p>
+    <p><strong>Address:</strong> ${p.propertyAddress}, ${p.propertySuburb}, ${p.state} ${p.propertyPostCode}</p>
+    <p><strong>Booking Email:</strong> ${p.emailForBooking}</p>
+    <p><strong>Contact:</strong> ${p.contactNumber}</p>
+    <p>${p.propertyDescription}</p>
+    ${p.propertyLink ? `<p><a href="${p.propertyLink}" target="_blank">More Info</a></p>` : ''}
+    ${p.propertyImageIds && p.propertyImageIds.length > 0 ? `<img src="images/${p.propertyImageIds[0]}" alt="Property Image">` : ''}
+  `;
+  document.getElementById('propertyDetails').innerHTML = html;
 }
