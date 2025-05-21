@@ -13,29 +13,35 @@
       margin: 0;
       padding: 0;
     }
+
     .auth-screen, .main-screen {
-      max-width: 600px;
+      max-width: 800px;
       margin: 80px auto;
       background: white;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
+
     .hidden { display: none; }
+
     h1 {
       text-align: center;
       color: #14b8a6;
     }
+
     label, input, button {
       display: block;
       width: 100%;
       margin-top: 15px;
     }
+
     input {
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
+
     button {
       background-color: #14b8a6;
       color: white;
@@ -45,17 +51,21 @@
       font-size: 16px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #0d8e80;
     }
+
     #container {
       display: flex;
-      height: 100vh;
+      height: 600px;
     }
+
     #map {
       flex: 2;
       height: 100%;
     }
+
     #sidebar {
       flex: 1;
       padding: 20px;
@@ -63,28 +73,37 @@
       border-left: 1px solid #ccc;
       background-color: #f9f9f9;
     }
+
     #propertyDetails img {
       max-width: 100%;
       margin-top: 10px;
     }
-    #filters {
-      position: absolute;
-      top: 10px;
-      left: 10px;
+
+    #filtersPanel {
+      padding: 20px;
+      margin: 0 auto;
       background: white;
-      padding: 10px;
-      z-index: 999;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-    #filters select {
-      margin-right: 10px;
+
+    #filtersPanel select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .leaflet-container {
+      transition: transform 0.2s ease, filter 0.2s ease;
     }
   </style>
 </head>
 <body>
 
-<!-- Access Gate -->
+<!-- 🔐 Access Code -->
 <div class="auth-screen" id="authScreen">
   <h1>Access Required</h1>
   <label for="accessCode">Enter Access Code:</label>
@@ -92,7 +111,7 @@
   <button onclick="checkAccess()">Enter</button>
 </div>
 
-<!-- Main App -->
+<!-- 🌐 Main App -->
 <div class="main-screen hidden" id="mainScreen">
   <div id="container">
     <div id="map"></div>
@@ -110,22 +129,16 @@
     <label for="typeFilter">Property Type:</label>
     <select id="typeFilter"><option value="">All</option></select>
   </div>
-  </div>
-  <div id="container">
-    <div id="map"></div>
-    <div id="sidebar">
-      <h2>Property Description</h2>
-      <div id="propertyDetails">Click on a property pin to see details.</div>
-    </div>
-  </div>
 </div>
 
+<!-- 🔧 Scripts -->
 <script>
   function checkAccess() {
     const code = document.getElementById('accessCode').value.trim().toLowerCase();
     if (code === 'icr') {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainScreen').classList.remove('hidden');
+      initMap(); // ✅ Start the map only after access granted
     } else {
       alert('Invalid access code.');
     }
