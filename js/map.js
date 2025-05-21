@@ -1,5 +1,6 @@
 let map;
 let markers = [];
+let markerClusterGroup;
 
 const greenIcon = L.icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
@@ -20,22 +21,27 @@ const greyIcon = L.icon({
 });
 
 function initMap() {
+  if (map) return; // prevent multiple inits
+
   map = L.map('map', {
     center: [-34.9285, 138.6007],
-    zoom: 7,
-    zoomAnimation: true,
-    fadeAnimation: true,
+    zoom: 6,
     doubleClickZoom: true,
     zoomControl: true,
+    zoomAnimation: true,
+    fadeAnimation: true,
     inertia: true,
-    markerZoomAnimation: true
+    markerZoomAnimation: true,
   });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  loadProperties(); // Load and show markers
+  markerClusterGroup = L.markerClusterGroup();
+  map.addLayer(markerClusterGroup);
+
+  loadProperties();
 }
 
 function loadProperties() {
@@ -71,9 +77,10 @@ function populateFilter(selectId, options) {
 }
 
 function displayMarkers(properties) {
-  clearMarkers();
+  markerClusterGroup.clearLayers(); // Clear existing markers
+
   properties.forEach(p => {
-    const marker = L.marker([p.latitude, p.longitude], { icon: greenIcon }).addTo(map);
+    const marker = L.marker([p.latitude, p.longitude], { icon: greenIcon });
 
     marker.bindPopup(`<strong>${p.propertyName}</strong><br>${p.propertyType}`);
 
@@ -83,13 +90,8 @@ function displayMarkers(properties) {
       showDetails(p);
     });
 
-    markers.push(marker);
+    markerClusterGroup.addLayer(marker);
   });
-}
-
-function clearMarkers() {
-  markers.forEach(marker => map.removeLayer(marker));
-  markers = [];
 }
 
 function filterMarkers(properties) {
