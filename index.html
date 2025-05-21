@@ -1,19 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Property Map Viewer</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <title>ICR Property Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    .auth-screen, .main-screen {
+      max-width: 600px;
+      margin: 80px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .hidden { display: none; }
+    h1 {
+      text-align: center;
+      color: #14b8a6;
+    }
+    label, input, button {
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+    }
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #14b8a6;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0d8e80;
+    }
+    #container {
+      display: flex;
+      height: 100vh;
+    }
+    #map {
+      flex: 2;
+      height: 100%;
+    }
+    #sidebar {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      border-left: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+    #propertyDetails img {
+      max-width: 100%;
+      margin-top: 10px;
+    }
+    #filters {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      z-index: 999;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+    #filters select {
+      margin-right: 10px;
+    }
+  </style>
 </head>
 <body>
-  <div id="filters">
-  <label for="stateFilter">State:</label>
-  <select id="stateFilter"><option value="">All</option></select>
 
-  <label for="typeFilter">Property Type:</label>
-  <select id="typeFilter"><option value="">All</option></select>
+<!-- Access Gate -->
+<div class="auth-screen" id="authScreen">
+  <h1>Access Required</h1>
+  <label for="accessCode">Enter Access Code:</label>
+  <input type="password" id="accessCode" placeholder="Enter code" />
+  <button onclick="checkAccess()">Enter</button>
+</div>
+
+<!-- Main App -->
+<div class="main-screen hidden" id="mainScreen">
+  <div id="filters">
+    <label for="stateFilter">State:</label>
+    <select id="stateFilter"><option value="">All</option></select>
+    <label for="typeFilter">Property Type:</label>
+    <select id="typeFilter"><option value="">All</option></select>
   </div>
+
   <div id="container">
     <div id="map"></div>
     <div id="sidebar">
@@ -21,7 +108,22 @@
       <div id="propertyDetails">Click on a property pin to see details.</div>
     </div>
   </div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="js/map.js"></script>
+</div>
+
+<script>
+  function checkAccess() {
+    const code = document.getElementById('accessCode').value.trim().toLowerCase();
+    if (code === 'icr') {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('mainScreen').classList.remove('hidden');
+    } else {
+      alert('Invalid access code.');
+    }
+  }
+</script>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="js/map.js"></script>
+
 </body>
 </html>
