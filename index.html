@@ -94,13 +94,23 @@
 
 <!-- Main App -->
 <div class="main-screen hidden" id="mainScreen">
-  <div id="filters">
+  <div id="container">
+    <div id="map"></div>
+    <div id="sidebar">
+      <h2>Property Description</h2>
+      <div id="propertyDetails">Click on a property pin to see details.</div>
+    </div>
+  </div>
+
+  <div id="filtersPanel">
+    <h3>Filter Properties</h3>
     <label for="stateFilter">State:</label>
     <select id="stateFilter"><option value="">All</option></select>
+
     <label for="typeFilter">Property Type:</label>
     <select id="typeFilter"><option value="">All</option></select>
   </div>
-
+  </div>
   <div id="container">
     <div id="map"></div>
     <div id="sidebar">
