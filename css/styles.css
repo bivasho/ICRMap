@@ -40,3 +40,38 @@ body, html {
 #filters select {
   margin-right: 10px;
 }
+#container {
+  display: flex;
+  height: 600px;
+}
+
+#map {
+  flex: 2;
+  height: 100%;
+}
+
+#sidebar {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  border-left: 1px solid #ccc;
+  background-color: #f9f9f9;
+}
+
+#filtersPanel {
+  padding: 20px;
+  margin: 0 auto;
+  background: white;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+#filtersPanel select {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
