@@ -14,8 +14,8 @@
       padding: 0;
     }
 
-    .auth-screen, .main-screen {
-      max-width: 800px;
+    .auth-screen {
+      max-width: 600px;
       margin: 80px auto;
       background: white;
       padding: 30px;
@@ -56,9 +56,20 @@
       background-color: #0d8e80;
     }
 
+    #mainScreen {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    #mapSection {
+      width: 100%;
+    }
+
     #container {
       display: flex;
-      height: 600px;
+      height: 80vh;
+      width: 100%;
     }
 
     #map {
@@ -80,24 +91,67 @@
     }
 
     #filtersPanel {
+      width: 100%;
       padding: 20px;
-      margin: 0 auto;
       background: white;
       border-top: 1px solid #ddd;
       display: flex;
-      justify-content: center;
-      gap: 20px;
       flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
+    }
+
+    #filtersPanel h3 {
+      width: 100%;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .filterGroup {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #filtersPanel label {
+      font-weight: bold;
+      margin-bottom: 5px;
     }
 
     #filtersPanel select {
       padding: 10px;
       border-radius: 5px;
       border: 1px solid #ccc;
+      min-width: 200px;
     }
 
     .leaflet-container {
       transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    @media (max-width: 768px) {
+      #container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      #map {
+        height: 400px;
+      }
+
+      #sidebar {
+        border-left: none;
+        border-top: 1px solid #ccc;
+      }
+
+      #filtersPanel {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      #filtersPanel select {
+        width: 90%;
+      }
     }
   </style>
 </head>
@@ -111,24 +165,35 @@
   <button onclick="checkAccess()">Enter</button>
 </div>
 
-<!-- 🌐 Main App -->
-<div class="main-screen hidden" id="mainScreen">
-  <div id="container">
-    <div id="map"></div>
-    <div id="sidebar">
-      <h2>Property Description</h2>
-      <div id="propertyDetails">Click on a property pin to see details.</div>
+<!-- 🌐 Main App (No container restriction here) -->
+<div class="hidden" id="mainScreen">
+
+  <!-- Section: Map + Sidebar -->
+  <section id="mapSection">
+    <div id="container">
+      <div id="map"></div>
+      <div id="sidebar">
+        <h2>Property Description</h2>
+        <div id="propertyDetails">Click on a property pin to see details.</div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <div id="filtersPanel">
-    <h3>Filter Properties</h3>
-    <label for="stateFilter">State:</label>
-    <select id="stateFilter"><option value="">All</option></select>
+  <!-- Section: Filters -->
+  <section id="filtersSection">
+    <div id="filtersPanel">
+      <h3>Filter Properties</h3>
+      <div class="filterGroup">
+        <label for="stateFilter">State:</label>
+        <select id="stateFilter"><option value="">All</option></select>
+      </div>
+      <div class="filterGroup">
+        <label for="typeFilter">Property Type:</label>
+        <select id="typeFilter"><option value="">All</option></select>
+      </div>
+    </div>
+  </section>
 
-    <label for="typeFilter">Property Type:</label>
-    <select id="typeFilter"><option value="">All</option></select>
-  </div>
 </div>
 
 <!-- 🔧 Scripts -->
@@ -138,7 +203,7 @@
     if (code === 'icr') {
       document.getElementById('authScreen').classList.add('hidden');
       document.getElementById('mainScreen').classList.remove('hidden');
-      initMap(); // ✅ Start the map only after access granted
+      initMap();
     } else {
       alert('Invalid access code.');
     }
