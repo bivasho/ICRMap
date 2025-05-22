@@ -27,14 +27,14 @@ function initMap() {
   if (map) return;
 
   map = L.map('map', {
-    center: [-34.9285, 138.6007],
-    zoom: 7,
+    center: [-25.2744, 133.7751], // Australia center
+    zoom: 5,
     zoomAnimation: true,
-    fadeAnimation: true,
     doubleClickZoom: true,
+    fadeAnimation: true,
     zoomControl: true,
     inertia: true,
-    markerZoomAnimation: true,
+    markerZoomAnimation: true
   });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
