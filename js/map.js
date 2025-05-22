@@ -4,7 +4,7 @@ let currentProperties = [];
 let moveTimeout;
 const MAX_MARKERS = 500; // Limit for wide zooms
 
-// Icons
+// Marker Icons
 const greenIcon = L.icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
@@ -23,15 +23,16 @@ const greyIcon = L.icon({
   shadowSize: [41, 41]
 });
 
+// Initialize the map
 function initMap() {
   if (map) return;
 
   map = L.map('map', {
-    center: [-25.2744, 133.7751], // Australia center
+    center: [-25.2744, 133.7751], // Centered on Australia
     zoom: 5,
     zoomAnimation: true,
-    doubleClickZoom: true,
     fadeAnimation: true,
+    doubleClickZoom: true,
     zoomControl: true,
     inertia: true,
     markerZoomAnimation: true
@@ -47,6 +48,7 @@ function initMap() {
   loadProperties();
 }
 
+// Load and process all property data
 function loadProperties() {
   fetch('data/properties.json')
     .then(res => res.json())
@@ -64,8 +66,7 @@ function loadProperties() {
       populateFilter('stateFilter', [...states]);
       populateFilter('typeFilter', [...types]);
 
-      // Initial load
-      filterMarkers();
+      filterMarkers(); // initial render
 
       // Events
       document.getElementById('stateFilter').addEventListener('change', filterMarkers);
@@ -74,11 +75,16 @@ function loadProperties() {
         clearTimeout(moveTimeout);
         moveTimeout = setTimeout(filterMarkers, 100);
       });
+
+      enableSearch(properties);
+      enableSuburbPan(properties);
     });
 }
 
+// Populate filter dropdowns
 function populateFilter(selectId, options) {
   const select = document.getElementById(selectId);
+  select.innerHTML = '<option value="">All</option>';
   options.sort().forEach(opt => {
     const option = document.createElement('option');
     option.value = opt;
@@ -87,6 +93,7 @@ function populateFilter(selectId, options) {
   });
 }
 
+// Filter and show only markers in view & matching filters
 function filterMarkers() {
   const selectedState = document.getElementById('stateFilter').value;
   const selectedType = document.getElementById('typeFilter').value;
@@ -98,7 +105,6 @@ function filterMarkers() {
     bounds.contains([p.latitude, p.longitude])
   );
 
-  // If too zoomed out (too many markers), limit number
   if (filtered.length > MAX_MARKERS) {
     filtered = filtered.slice(0, MAX_MARKERS);
   }
@@ -106,6 +112,7 @@ function filterMarkers() {
   displayMarkers(filtered);
 }
 
+// Render markers on map
 function displayMarkers(properties) {
   markerClusterGroup.clearLayers();
 
@@ -124,6 +131,7 @@ function displayMarkers(properties) {
   });
 }
 
+// Display sidebar details
 function showDetails(p) {
   const html = `
     <h3>${p.propertyName}</h3>
@@ -136,4 +144,39 @@ function showDetails(p) {
     ${p.propertyImageIds && p.propertyImageIds.length > 0 ? `<img src="images/${p.propertyImageIds[0]}" alt="Property Image">` : ''}
   `;
   document.getElementById('propertyDetails').innerHTML = html;
+}
+
+// Search by property name or address
+function enableSearch(properties) {
+  const searchInput = document.getElementById('searchInput');
+  if (!searchInput) return;
+
+  searchInput.addEventListener('input', () => {
+    const text = searchInput.value.toLowerCase();
+    const match = properties.find(p =>
+      p.propertyName.toLowerCase().includes(text) ||
+      p.propertyAddress.toLowerCase().includes(text)
+    );
+    if (match) {
+      map.setView([match.latitude, match.longitude], 15);
+    }
+  });
+}
+
+// Suburb dropdown pan (not filtering)
+function enableSuburbPan(properties) {
+  const suburbInput = document.getElementById('suburbInput');
+  const datalist = document.getElementById('suburbList');
+  if (!suburbInput || !datalist) return;
+
+  const suburbs = [...new Set(properties.map(p => p.propertySuburb).filter(Boolean))];
+  datalist.innerHTML = suburbs.sort().map(s => `<option value="${s}">`).join('');
+
+  suburbInput.addEventListener('change', () => {
+    const val = suburbInput.value.toLowerCase();
+    const match = properties.find(p => p.propertySuburb.toLowerCase() === val);
+    if (match) {
+      map.setView([match.latitude, match.longitude], 14);
+    }
+  });
 }
