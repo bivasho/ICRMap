@@ -4,163 +4,19 @@
   <meta charset="UTF-8" />
   <title>ICR Property Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <!-- MarkerCluster CSS -->
+
+  <!-- Map & Clustering CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+
+  <!-- Custom Styles -->
   <link rel="stylesheet" href="css/styles.css" />
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    }
-
-    .auth-screen {
-      max-width: 600px;
-      margin: 80px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .hidden { display: none; }
-
-    h1 {
-      text-align: center;
-      color: #14b8a6;
-    }
-
-    label, input, button {
-      display: block;
-      width: 100%;
-      margin-top: 15px;
-    }
-
-    input {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #14b8a6;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #0d8e80;
-    }
-
-    #mainScreen {
-      width: 100%;
-      margin: 0;
-      padding: 0;
-    }
-
-    #mapSection {
-      width: 100%;
-    }
-
-    #container {
-      display: flex;
-      height: 80vh;
-      width: 100%;
-    }
-
-    #map {
-      flex: 2;
-      height: 100%;
-    }
-
-    #sidebar {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-      border-left: 1px solid #ccc;
-      background-color: #f9f9f9;
-    }
-
-    #propertyDetails img {
-      max-width: 100%;
-      margin-top: 10px;
-    }
-
-    #filtersPanel {
-      width: 100%;
-      padding: 20px;
-      background: white;
-      border-top: 1px solid #ddd;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 30px;
-      box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
-    }
-
-    #filtersPanel h3 {
-      width: 100%;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .filterGroup {
-      display: flex;
-      flex-direction: column;
-    }
-
-    #filtersPanel label {
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-
-    #filtersPanel select {
-      padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      min-width: 200px;
-    }
-
-    .leaflet-container {
-      transition: transform 0.2s ease, filter 0.2s ease;
-    }
-
-    @media (max-width: 768px) {
-      #container {
-        flex-direction: column;
-        height: auto;
-      }
-
-      #map {
-        height: 400px;
-      }
-
-      #sidebar {
-        border-left: none;
-        border-top: 1px solid #ccc;
-      }
-
-      #filtersPanel {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      #filtersPanel select {
-        width: 90%;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
 
-<!-- 🔐 Access Code -->
+<!-- 🔐 Access Code Lock Screen -->
 <div class="auth-screen" id="authScreen">
   <h1>Access Required</h1>
   <label for="accessCode">Enter Access Code:</label>
@@ -168,47 +24,56 @@
   <button onclick="checkAccess()">Enter</button>
 </div>
 
-<!-- 🌐 Main App (No container restriction here) -->
+<!-- 🌐 Main Application Screen -->
 <div class="hidden" id="mainScreen">
 
-  <!-- Section: Map + Sidebar -->
+  <!-- 🗺️ Map and Property Details Section -->
   <section id="mapSection">
     <div id="container">
       <div id="map"></div>
       <div id="sidebar">
         <h2>Property Description</h2>
         <div id="propertyDetails">Click on a property pin to see details.</div>
+
+        <div id="selectedProperties" class="card">
+          <h3>Selected Properties Option</h3>
+          <ul id="poList"></ul>
+          <button id="startQuoting">Start Quoting</button>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Section: Filters -->
+  <!-- 🔎 Filters Section -->
   <section id="filtersSection">
     <div id="filtersPanel">
       <h3>Filter Properties</h3>
+
       <div class="filterGroup">
         <label for="stateFilter">State:</label>
         <select id="stateFilter"><option value="">All</option></select>
       </div>
+
       <div class="filterGroup">
         <label for="typeFilter">Property Type:</label>
         <select id="typeFilter"><option value="">All</option></select>
       </div>
+
       <div class="filterGroup">
         <label for="searchInput">Search by Name or Address</label>
-        <input id="searchInput" type="text" placeholder="Search..." />
+        <input type="text" id="searchInput" placeholder="Search..." />
       </div>
+
       <div class="filterGroup">
-      <label for="suburbInput">Go to Suburb</label>
-      <input id="suburbInput" list="suburbList" placeholder="Type suburb..." />
-      <datalist id="suburbList"></datalist>
-    </div>
+        <label for="suburbInput">Go to Suburb</label>
+        <input id="suburbInput" type="text" placeholder="Type suburb..." autocomplete="off" />
+        <ul id="suburbSuggestions"></ul>
+      </div>
     </div>
   </section>
-
 </div>
 
-<!-- 🔧 Scripts -->
+<!-- ✅ Access Control Logic -->
 <script>
   function checkAccess() {
     const code = document.getElementById('accessCode').value.trim().toLowerCase();
@@ -222,8 +87,12 @@
   }
 </script>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<!-- 🌍 JS Dependencies -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+
+<!-- 📦 Custom Scripts -->
+<script src="js/suburb-lookup.js"></script>
 <script src="js/map.js"></script>
 
 </body>
