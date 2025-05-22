@@ -1,4 +1,4 @@
-/* Reset */
+/* === Layout Reset === */
 body, html {
   margin: 0;
   padding: 0;
@@ -7,52 +7,82 @@ body, html {
   background-color: #f4f4f4;
 }
 
-/* Hide initially */
 .hidden {
   display: none;
 }
 
-/* Fullscreen sections */
-#mapSection, #filtersSection {
+#app {
   width: 100%;
 }
 
-/* Main map layout */
+/* === Map & Sidebar Layout === */
 #container {
   display: flex;
-  height: 80vh;
+  height: 65vh;
   width: 100%;
 }
 
 #map {
-  flex: 2;
+  flex: 3;
   height: 100%;
 }
 
 #sidebar {
   flex: 1;
+  background: #fff;
   padding: 20px;
   overflow-y: auto;
-  border-left: 1px solid #ccc;
-  background-color: #f9f9f9;
+  border-left: 1px solid #ddd;
 }
 
-/* Property description */
-#propertyDetails img {
-  max-width: 100%;
+/* === Property Card & PO Section === */
+.card {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+#selectedProperties ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#selectedProperties li {
+  padding: 5px 0;
+  font-size: 14px;
+}
+
+#selectedProperties button,
+#propertyDetails button,
+#startQuoting {
+  background-color: #14b8a6;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
   margin-top: 10px;
 }
 
-/* Filters Panel */
+#selectedProperties button:hover,
+#propertyDetails button:hover,
+#startQuoting:hover {
+  background-color: #0d8e80;
+}
+
+/* === Filters === */
 #filtersPanel {
   padding: 20px;
-  background: white;
+  background: #fff;
   border-top: 1px solid #ddd;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px;
-  width: 100%;
+  gap: 20px;
   box-shadow: 0 -1px 5px rgba(0,0,0,0.05);
 }
 
@@ -65,6 +95,7 @@ body, html {
 .filterGroup {
   display: flex;
   flex-direction: column;
+  min-width: 220px;
 }
 
 #filtersPanel label {
@@ -72,19 +103,37 @@ body, html {
   margin-bottom: 5px;
 }
 
-#filtersPanel select {
+#filtersPanel select,
+#filtersPanel input {
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
-  min-width: 200px;
 }
 
-/* Smooth leaflet map transition */
-.leaflet-container {
-  transition: transform 0.2s ease, filter 0.2s ease;
+/* === Suburb Suggestion Dropdown === */
+#suburbSuggestions {
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+  border: 1px solid #ccc;
+  max-height: 140px;
+  overflow-y: auto;
+  background: #fff;
+  position: absolute;
+  z-index: 1000;
 }
 
-/* Responsive */
+#suburbSuggestions li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#suburbSuggestions li:hover {
+  background-color: #e0f7f5;
+}
+
+/* === Responsive === */
 @media (max-width: 768px) {
   #container {
     flex-direction: column;
@@ -105,60 +154,9 @@ body, html {
     align-items: center;
   }
 
-  #filtersPanel select {
+  #filtersPanel select,
+  #filtersPanel input {
     width: 90%;
   }
 }
-#mapSection {
-  padding: 10px;
-  background-color: #eaf4f4;
-}
 
-#container {
-  display: flex;
-  height: 60vh;
-  width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-#sidebar {
-  flex: 1;
-  background-color: #fff;
-  border-left: 1px solid #ccc;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-#sidebar h2 {
-  margin-top: 0;
-}
-
-#propertyDetails {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 15px;
-  background-color: #fdfdfd;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-#filtersPanel {
-  margin: 20px auto;
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-}
-
-#filtersPanel select,
-#filtersPanel input {
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  min-width: 200px;
-}
