@@ -1,7 +1,10 @@
 let map;
-let markers = [];
 let markerClusterGroup;
+let currentProperties = [];
+let moveTimeout;
+const MAX_MARKERS = 500; // Limit for wide zooms
 
+// Icons
 const greenIcon = L.icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png',
   shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
@@ -21,15 +24,15 @@ const greyIcon = L.icon({
 });
 
 function initMap() {
-  if (map) return; // prevent multiple inits
+  if (map) return;
 
   map = L.map('map', {
     center: [-34.9285, 138.6007],
-    zoom: 6,
-    doubleClickZoom: true,
-    zoomControl: true,
+    zoom: 7,
     zoomAnimation: true,
     fadeAnimation: true,
+    doubleClickZoom: true,
+    zoomControl: true,
     inertia: true,
     markerZoomAnimation: true,
   });
@@ -48,6 +51,8 @@ function loadProperties() {
   fetch('data/properties.json')
     .then(res => res.json())
     .then(properties => {
+      currentProperties = properties;
+
       const states = new Set();
       const types = new Set();
 
@@ -59,10 +64,16 @@ function loadProperties() {
       populateFilter('stateFilter', [...states]);
       populateFilter('typeFilter', [...types]);
 
-      displayMarkers(properties);
+      // Initial load
+      filterMarkers();
 
-      document.getElementById('stateFilter').addEventListener('change', () => filterMarkers(properties));
-      document.getElementById('typeFilter').addEventListener('change', () => filterMarkers(properties));
+      // Events
+      document.getElementById('stateFilter').addEventListener('change', filterMarkers);
+      document.getElementById('typeFilter').addEventListener('change', filterMarkers);
+      map.on('moveend', () => {
+        clearTimeout(moveTimeout);
+        moveTimeout = setTimeout(filterMarkers, 100);
+      });
     });
 }
 
@@ -76,8 +87,27 @@ function populateFilter(selectId, options) {
   });
 }
 
+function filterMarkers() {
+  const selectedState = document.getElementById('stateFilter').value;
+  const selectedType = document.getElementById('typeFilter').value;
+  const bounds = map.getBounds();
+
+  let filtered = currentProperties.filter(p =>
+    (!selectedState || p.state === selectedState) &&
+    (!selectedType || p.propertyType === selectedType) &&
+    bounds.contains([p.latitude, p.longitude])
+  );
+
+  // If too zoomed out (too many markers), limit number
+  if (filtered.length > MAX_MARKERS) {
+    filtered = filtered.slice(0, MAX_MARKERS);
+  }
+
+  displayMarkers(filtered);
+}
+
 function displayMarkers(properties) {
-  markerClusterGroup.clearLayers(); // Clear existing markers
+  markerClusterGroup.clearLayers();
 
   properties.forEach(p => {
     const marker = L.marker([p.latitude, p.longitude], { icon: greenIcon });
@@ -92,18 +122,6 @@ function displayMarkers(properties) {
 
     markerClusterGroup.addLayer(marker);
   });
-}
-
-function filterMarkers(properties) {
-  const selectedState = document.getElementById('stateFilter').value;
-  const selectedType = document.getElementById('typeFilter').value;
-
-  const filtered = properties.filter(p =>
-    (!selectedState || p.state === selectedState) &&
-    (!selectedType || p.propertyType === selectedType)
-  );
-
-  displayMarkers(filtered);
 }
 
 function showDetails(p) {
