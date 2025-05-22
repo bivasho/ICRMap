@@ -3,6 +3,7 @@ let markerClusterGroup;
 let currentProperties = [];
 let selectedProperties = [];
 const MAX_MARKERS = 500;
+const MAX_SELECTED = 10;
 
 const AU_BOUNDS = L.latLngBounds(
   L.latLng(-44.5, 112.0),
@@ -82,6 +83,9 @@ function renderMarkers() {
 }
 
 function showDetails(p) {
+  const isSelected = selectedProperties.some(prop => prop.id === p.id);
+  const disableButton = selectedProperties.length >= MAX_SELECTED && !isSelected;
+
   const detailHTML = `
     <h3>${p.propertyName}</h3>
     <p><strong>Property ID:</strong> ${p.id}</p>
@@ -98,7 +102,9 @@ function showDetails(p) {
     <p><strong>Booking Email:</strong> ${p.emailForBooking}</p>
     <p><strong>Contact:</strong> ${p.contactNumber}</p>
     <p>${p.propertyDescription}</p>
-    <button onclick='addToPO(${JSON.stringify(p)})'>Select as an option</button>
+    <button onclick='addToPO(${JSON.stringify(p)})' ${disableButton ? "disabled" : ""}>
+      ${isSelected ? "Selected" : "Select as an option"}
+    </button>
   `;
 
   document.getElementById('propertyDetails').innerHTML = detailHTML;
@@ -106,9 +112,12 @@ function showDetails(p) {
 
 function addToPO(p) {
   if (!selectedProperties.some(prop => prop.id === p.id)) {
-    selectedProperties.push(p);
+    if (selectedProperties.length < MAX_SELECTED) {
+      selectedProperties.push(p);
+      renderPO();
+      showDetails(p); // refresh button state
+    }
   }
-  renderPO();
 }
 
 function removeFromPO(index) {
@@ -118,10 +127,19 @@ function removeFromPO(index) {
 
 function renderPO() {
   const list = document.getElementById('poList');
+  const container = document.getElementById('selectedProperties');
   list.innerHTML = '';
+
+  if (selectedProperties.length === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+
   selectedProperties.forEach((p, i) => {
     const item = document.createElement('li');
-    item.innerHTML = `PO ${i + 1}: ${p.id} | ${p.propertyName} | ${p.numOfBedrooms} BR | ${p.propertySuburb} 
+    item.innerHTML = `PO ${i + 1}: ${p.id} | ${p.propertyName} | ${p.numOfBedrooms} BR | ${p.propertySuburb}
       <button onclick='removeFromPO(${i})'>🗑️</button>`;
     list.appendChild(item);
   });
@@ -135,6 +153,7 @@ function searchByNameOrAddress() {
   );
   if (match) {
     map.setView([match.latitude, match.longitude], 14);
+    showDetails(match);
   }
 }
 
