@@ -5,18 +5,18 @@
   <title>ICR Property Viewer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Map & Clustering CSS -->
+  <!-- Leaflet & Cluster CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
 
-  <!-- Custom Styles -->
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/auth.css" />
 </head>
 <body>
 
-<!-- 🔐 Access Code Lock Screen -->
+<!-- 🔐 Access Code -->
 <div class="auth-screen" id="authScreen">
   <h1>Access Required</h1>
   <label for="accessCode">Enter Access Code:</label>
@@ -24,56 +24,43 @@
   <button onclick="checkAccess()">Enter</button>
 </div>
 
-<!-- 🌐 Main Application Screen -->
+<!-- 🌐 Main App -->
 <div class="hidden" id="mainScreen">
-
-  <!-- 🗺️ Map and Property Details Section -->
-  <section id="mapSection">
-    <div id="container">
-      <div id="map"></div>
-      <div id="sidebar">
-        <h2>Property Description</h2>
-        <div id="propertyDetails">Click on a property pin to see details.</div>
-
-        <div id="selectedProperties" class="card">
-          <h3>Selected Properties Option</h3>
-          <ul id="poList"></ul>
-          <button id="startQuoting">Start Quoting</button>
-        </div>
+  <div id="container">
+    <div id="map"></div>
+    <div id="sidebar">
+      <h2>Property Description</h2>
+      <div id="propertyDetails">Click on a property pin to see details.</div>
+      <div id="selectedProperties" class="card" style="display: none;">
+        <h3>Selected Properties Option</h3>
+        <ul id="poList"></ul>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- 🔎 Filters Section -->
-  <section id="filtersSection">
-    <div id="filtersPanel">
-      <h3>Filter Properties</h3>
-
-      <div class="filterGroup">
-        <label for="stateFilter">State:</label>
-        <select id="stateFilter"><option value="">All</option></select>
-      </div>
-
-      <div class="filterGroup">
-        <label for="typeFilter">Property Type:</label>
-        <select id="typeFilter"><option value="">All</option></select>
-      </div>
-
-      <div class="filterGroup">
-        <label for="searchInput">Search by Name or Address</label>
-        <input type="text" id="searchInput" placeholder="Search..." />
-      </div>
-
-      <div class="filterGroup">
-        <label for="suburbInput">Go to Suburb</label>
-        <input id="suburbInput" type="text" placeholder="Type suburb..." autocomplete="off" />
-        <ul id="suburbSuggestions"></ul>
-      </div>
+  <div id="filtersPanel">
+    <h3>Filter Properties</h3>
+    <div class="filterGroup">
+      <label for="stateFilter">State:</label>
+      <select id="stateFilter"><option value="">All</option></select>
     </div>
-  </section>
+    <div class="filterGroup">
+      <label for="typeFilter">Property Type:</label>
+      <select id="typeFilter"><option value="">All</option></select>
+    </div>
+    <div class="filterGroup">
+      <label for="searchInput">Search by Name or Address</label>
+      <input type="text" id="searchInput" placeholder="Search..." />
+    </div>
+    <div class="filterGroup">
+      <label for="suburbInput">Go to Suburb</label>
+      <input id="suburbInput" type="text" placeholder="Type suburb..." autocomplete="off" />
+      <ul id="suburbSuggestions"></ul>
+    </div>
+  </div>
 </div>
 
-<!-- ✅ Access Control Logic -->
+<!-- Access Script -->
 <script>
   function checkAccess() {
     const code = document.getElementById('accessCode').value.trim().toLowerCase();
@@ -87,11 +74,11 @@
   }
 </script>
 
-<!-- 🌍 JS Dependencies -->
+<!-- JS Libraries -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
-<!-- 📦 Custom Scripts -->
+<!-- App Scripts -->
 <script src="js/suburb-lookup.js"></script>
 <script src="js/map.js"></script>
 
